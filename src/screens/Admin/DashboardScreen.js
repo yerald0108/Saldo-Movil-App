@@ -158,6 +158,17 @@ export default function DashboardScreen({ navigation }) {
           </View>
           <Ionicons name="chevron-forward" size={24} color="#D1D5DB" />
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.quickAction}
+          onPress={() => navigation.navigate('AdminNotifications')}
+        >
+          <View style={styles.quickActionLeft}>
+            <Ionicons name="notifications-outline" size={24} color="#EF4444" />
+            <Text style={styles.quickActionText}>Enviar Notificaciones</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#D1D5DB" />
+        </TouchableOpacity>
       </View>
 
       {/* Paquetes Más Vendidos */}

@@ -12,6 +12,7 @@ import { supabase } from '../../services/supabase';
 import { useAuthStore } from '../../stores/authStore';
 import { ordersService } from '../../services/ordersService';
 import PurchaseModal from '../../components/modals/PurchaseModal';
+import { notificationService } from '../../services/notificationService';
 
 export default function HomeScreen({ navigation }) {
   const [packages, setPackages] = useState([]);
@@ -52,9 +53,9 @@ export default function HomeScreen({ navigation }) {
     setModalVisible(true);
   };
 
-  const handleConfirmPurchase = async (phoneNumber) => {
+// Actualiza handleConfirmPurchase
+const handleConfirmPurchase = async (phoneNumber) => {
   try {
-    // Crear el pedido directamente como "completed"
     const result = await supabase
       .from('orders')
       .insert([
@@ -63,7 +64,7 @@ export default function HomeScreen({ navigation }) {
           package_id: selectedPackage.id,
           phone_number: phoneNumber,
           amount: selectedPackage.price,
-          status: 'completed', // Directamente como completado
+          status: 'completed',
           completed_at: new Date().toISOString(),
         },
       ])
@@ -75,11 +76,18 @@ export default function HomeScreen({ navigation }) {
     }
 
     // Actualizar total gastado del usuario
-    const newTotal = (profile?.total_spent || 0) + parseFloat(selectedPackage.price);
+    const newTotal =
+      (profile?.total_spent || 0) + parseFloat(selectedPackage.price);
     await updateProfile({ total_spent: newTotal });
 
+    // 🔔 Enviar notificación de éxito
+    await notificationService.notifyRechargeSuccess(
+      phoneNumber,
+      selectedPackage.amount
+    );
+
     setModalVisible(false);
-    
+
     Alert.alert(
       '¡Éxito! 🎉',
       `Tu recarga de ${selectedPackage.amount} CUP al número +53 ${phoneNumber} ha sido procesada exitosamente.`,

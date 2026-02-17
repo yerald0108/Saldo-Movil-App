@@ -8,9 +8,14 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 // Auth Store
 import { useAuthStore } from '../stores/authStore';
 
+// Notifications Hook
+import { useNotifications } from '../hooks/useNotifications';
+
 // Auth Screens
 import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
+import ForgotPasswordScreen from '../screens/Auth/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screens/Auth/ResetPasswordScreen';
 
 // Main Screens
 import HomeScreen from '../screens/Home/HomeScreen';
@@ -27,52 +32,47 @@ import DashboardScreen from '../screens/Admin/DashboardScreen';
 import AdminUsersScreen from '../screens/Admin/AdminUsersScreen';
 import AdminOrdersScreen from '../screens/Admin/AdminOrdersScreen';
 import AdminPackagesScreen from '../screens/Admin/AdminPackagesScreen';
+import AdminNotificationsScreen from '../screens/Admin/AdminNotificationsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const AdminStack = createNativeStackNavigator();
 
-// Stack de Autenticación
+// ─── Stack de Autenticación ───────────────────────────────────────────────────
 function AuthStackScreen() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }
 
-// Stack de Perfil
+// ─── Stack de Perfil ──────────────────────────────────────────────────────────
 function ProfileStackScreen() {
   return (
     <ProfileStack.Navigator
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#3B82F6',
-        },
+        headerStyle: { backgroundColor: '#3B82F6' },
         headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerTitleStyle: { fontWeight: 'bold' },
       }}
     >
-      <ProfileStack.Screen 
-        name="PerfilMain" 
+      <ProfileStack.Screen
+        name="PerfilMain"
         component={PerfilScreen}
         options={{ headerShown: false }}
       />
-      <ProfileStack.Screen 
-        name="EditProfile" 
+      <ProfileStack.Screen
+        name="EditProfile"
         component={EditProfileScreen}
         options={{ title: 'Editar Perfil' }}
       />
-      <ProfileStack.Screen 
-        name="FavoriteNumbers" 
+      <ProfileStack.Screen
+        name="FavoriteNumbers"
         component={FavoriteNumbersScreen}
         options={{ title: 'Números Favoritos' }}
       />
@@ -80,55 +80,52 @@ function ProfileStackScreen() {
   );
 }
 
-// Stack de Admin
+// ─── Stack de Admin ───────────────────────────────────────────────────────────
 function AdminStackScreen() {
   return (
     <AdminStack.Navigator
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#3B82F6',
-        },
+        headerStyle: { backgroundColor: '#3B82F6' },
         headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerTitleStyle: { fontWeight: 'bold' },
       }}
     >
-      <AdminStack.Screen 
-        name="DashboardMain" 
+      <AdminStack.Screen
+        name="DashboardMain"
         component={DashboardScreen}
-        options={{ 
-          title: 'Dashboard',
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
       />
-      <AdminStack.Screen 
-        name="AdminUsers" 
+      <AdminStack.Screen
+        name="AdminUsers"
         component={AdminUsersScreen}
         options={{ title: 'Gestión de Usuarios' }}
       />
-      <AdminStack.Screen 
-        name="AdminOrders" 
+      <AdminStack.Screen
+        name="AdminOrders"
         component={AdminOrdersScreen}
         options={{ title: 'Gestión de Pedidos' }}
       />
-      <AdminStack.Screen 
-        name="AdminPackages" 
+      <AdminStack.Screen
+        name="AdminPackages"
         component={AdminPackagesScreen}
         options={{ title: 'Gestión de Paquetes' }}
+      />
+      <AdminStack.Screen
+        name="AdminNotifications"
+        component={AdminNotificationsScreen}
+        options={{ title: 'Notificaciones' }}
       />
     </AdminStack.Navigator>
   );
 }
 
-// Tabs Principales (para usuarios normales)
+// ─── Tabs para Usuarios Normales ──────────────────────────────────────────────
 function UserTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Compras') {
@@ -138,117 +135,111 @@ function UserTabs() {
           } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-outline';
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#3B82F6',
         tabBarInactiveTintColor: 'gray',
-        headerStyle: {
-          backgroundColor: '#3B82F6',
-        },
+        headerStyle: { backgroundColor: '#3B82F6' },
         headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerTitleStyle: { fontWeight: 'bold' },
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{ title: 'Inicio' }}
       />
-      <Tab.Screen 
-        name="Compras" 
+      <Tab.Screen
+        name="Compras"
         component={ComprasScreen}
         options={{ title: 'Comprar Saldo' }}
       />
-      <Tab.Screen 
-        name="Pedidos" 
+      <Tab.Screen
+        name="Pedidos"
         component={PedidosScreen}
         options={{ title: 'Mis Pedidos' }}
       />
-      <Tab.Screen 
-        name="Perfil" 
+      <Tab.Screen
+        name="Perfil"
         component={ProfileStackScreen}
-        options={{ 
-          title: 'Mi Perfil',
-          headerShown: false,
-        }}
+        options={{ title: 'Mi Perfil', headerShown: false }}
       />
     </Tab.Navigator>
   );
 }
 
-// Tabs para Admin (incluye pestaña de Dashboard)
+// ─── Tabs para Admin ──────────────────────────────────────────────────────────
 function AdminTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Dashboard') {
+            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
           } else if (route.name === 'Compras') {
             iconName = focused ? 'cart' : 'cart-outline';
           } else if (route.name === 'Pedidos') {
             iconName = focused ? 'list' : 'list-outline';
-          } else if (route.name === 'Dashboard') {
-            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
           } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-outline';
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#3B82F6',
         tabBarInactiveTintColor: 'gray',
-        headerStyle: {
-          backgroundColor: '#3B82F6',
-        },
+        headerStyle: { backgroundColor: '#3B82F6' },
         headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerTitleStyle: { fontWeight: 'bold' },
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{ title: 'Inicio' }}
       />
-      <Tab.Screen 
-        name="Dashboard" 
+      <Tab.Screen
+        name="Dashboard"
         component={AdminStackScreen}
-        options={{ 
-          title: 'Admin',
-          headerShown: false,
-        }}
+        options={{ title: 'Admin', headerShown: false }}
       />
-      <Tab.Screen 
-        name="Compras" 
+      <Tab.Screen
+        name="Compras"
         component={ComprasScreen}
         options={{ title: 'Comprar Saldo' }}
       />
-      <Tab.Screen 
-        name="Pedidos" 
+      <Tab.Screen
+        name="Pedidos"
         component={PedidosScreen}
         options={{ title: 'Mis Pedidos' }}
       />
-      <Tab.Screen 
-        name="Perfil" 
+      <Tab.Screen
+        name="Perfil"
         component={ProfileStackScreen}
-        options={{ 
-          title: 'Mi Perfil',
-          headerShown: false,
-        }}
+        options={{ title: 'Mi Perfil', headerShown: false }}
       />
     </Tab.Navigator>
   );
 }
 
+// ─── Componente que usa el Hook de Notificaciones ─────────────────────────────
+// Este componente va DENTRO del NavigationContainer para poder usar useNavigation
+function NavigatorWithNotifications() {
+  const { user, isAdmin } = useAuthStore();
+
+  // Hook de notificaciones (solo activo cuando hay usuario)
+  useNotifications();
+
+  if (!user) return <AuthStackScreen />;
+  if (isAdmin) return <AdminTabs />;
+  return <UserTabs />;
+}
+
+// ─── Navegador Principal ──────────────────────────────────────────────────────
 export default function AppNavigator() {
-  const { user, isAdmin, loading, initialize } = useAuthStore();
+  const { loading, initialize } = useAuthStore();
 
   useEffect(() => {
     initialize();
@@ -264,13 +255,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {!user ? (
-        <AuthStackScreen />
-      ) : isAdmin ? (
-        <AdminTabs />
-      ) : (
-        <UserTabs />
-      )}
+      <NavigatorWithNotifications />
     </NavigationContainer>
   );
 }
